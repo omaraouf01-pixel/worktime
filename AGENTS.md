@@ -33,3 +33,10 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
   - `ruff format --check .`
   - `mypy src`
 - If a requirement is ambiguous, ask instead of guessing.
+
+## Data Layer
+- Use parameterized SQL only; never interpolate data into SQL strings.
+- Store timestamps as `YYYY-MM-DDTHH:MM:SS` and dates as `YYYY-MM-DD`.
+- Enforce locking and invariants in the database as a second line of defense.
+- Apply schema changes only through a new migration; never edit a shipped migration.
+- Database file never lives inside the project folder.
