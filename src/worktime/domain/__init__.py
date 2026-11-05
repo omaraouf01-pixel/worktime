@@ -1,5 +1,10 @@
 """Domain layer package exporting core entities and domain errors."""
 
+from worktime.domain.accounting import (
+    SettlementDraft,
+    compute_wage,
+    prepare_settlement,
+)
 from worktime.domain.durations import (
     resolve_end,
     session_minutes,
@@ -17,10 +22,13 @@ __all__ = [
     "RecordLockedError",
     "Session",
     "Settlement",
+    "SettlementDraft",
     "Transaction",
     "TransactionKind",
     "ValidationError",
     "Worker",
+    "compute_wage",
+    "prepare_settlement",
     "resolve_end",
     "session_minutes",
     "sessions_overlap",

@@ -8,7 +8,7 @@ Business flow:
 2. During the period the owner records financial transactions per worker: advance (سلفة), prepayment (تسبيق), or deduction (خصم): positive amount, date, note.
 3. At settlement the owner TYPES the hourly rate manually. The rate is NEVER stored anywhere (shared computer). The settlement record stores minutes, wage, totals, paid amount and balances, but not the rate.
 4. Settlement formula (all money in integer centimes):
-   wage = round_half_up(minutes * rate / 60), then rounded to the nearest whole dinar (100 centimes)
+   wage = round_half_up(minutes * rate / 6000) dinars, expressed in centimes (x100), computed with integers only and a single rounding step; rate is in centimes per hour.
    payable = previous_balance + wage - (advances + prepayments + deductions)
    - If payable > 0: the owner enters the amount actually paid (0..payable); new_balance = payable - paid (positive = shop owes the worker).
    - If payable <= 0: paid = 0; new_balance = payable (negative = worker owes the shop). The balance carries to the next settlement.
