@@ -14,6 +14,10 @@ def test_domain_exports() -> None:
         "TransactionKind",
         "ValidationError",
         "Worker",
+        "resolve_end",
+        "session_minutes",
+        "sessions_overlap",
+        "total_minutes",
     }
     assert set(worktime.domain.__all__) == expected_all
     for name in expected_all:
