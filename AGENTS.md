@@ -40,3 +40,5 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
 - Enforce locking and invariants in the database as a second line of defense.
 - Apply schema changes only through a new migration; never edit a shipped migration.
 - Database file never lives inside the project folder.
+- Repositories never manage transactions; services own them via write_transaction.
+- Repositories translate sqlite3 errors into data-layer or domain errors; nothing outside data/ catches sqlite3 exceptions.

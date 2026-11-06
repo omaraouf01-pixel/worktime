@@ -8,13 +8,19 @@ def test_data_exports() -> None:
     expected_all = {
         "DatabaseError",
         "DatabaseVersionError",
-        "SCHEMA_VERSION",
+        "DuplicateWorkerError",
         "MIGRATIONS",
-        "default_db_path",
+        "OpenSessionExistsError",
+        "RecordNotFoundError",
+        "SCHEMA_VERSION",
+        "SessionRepository",
+        "TransactionRepository",
+        "WorkerRepository",
         "connect",
-        "write_transaction",
+        "default_db_path",
         "migrate",
         "open_database",
+        "write_transaction",
     }
     assert set(worktime.data.__all__) == expected_all
     for name in expected_all:
