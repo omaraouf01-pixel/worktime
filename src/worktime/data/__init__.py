@@ -16,6 +16,7 @@ from worktime.data.errors import (
 )
 from worktime.data.schema import MIGRATIONS, SCHEMA_VERSION
 from worktime.data.sessions import SessionRepository
+from worktime.data.settlements import SettlementRepository
 from worktime.data.transactions import TransactionRepository
 from worktime.data.workers import WorkerRepository
 
@@ -28,6 +29,7 @@ __all__ = [
     "RecordNotFoundError",
     "SCHEMA_VERSION",
     "SessionRepository",
+    "SettlementRepository",
     "TransactionRepository",
     "WorkerRepository",
     "connect",

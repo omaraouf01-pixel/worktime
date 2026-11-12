@@ -9,8 +9,9 @@ from worktime.data.errors import (
     OpenSessionExistsError,
     RecordNotFoundError,
 )
-from worktime.domain.errors import RecordLockedError
+from worktime.domain.errors import RecordLockedError, ValidationError
 from worktime.domain.session import Session
+from worktime.domain.settlement import Settlement
 from worktime.domain.transaction import Transaction, TransactionKind
 from worktime.domain.worker import Worker
 
@@ -70,6 +71,10 @@ def require_lastrowid(cursor: sqlite3.Cursor) -> int:
 def translate_integrity_error(exc: sqlite3.IntegrityError, *, context: str) -> Exception:
     """Translate SQLite integrity errors into domain or data layer exceptions."""
     msg = str(exc)
+    if "cannot lock an open session" in msg:
+        return ValidationError(msg)
+    if "settlement belongs to another worker" in msg:
+        return ValidationError(msg)
     if "record locked" in msg:
         return RecordLockedError(msg)
     if "FOREIGN KEY" in msg:
@@ -162,4 +167,23 @@ def row_to_transaction(row: sqlite3.Row) -> Transaction:
         occurred_on=from_db_date(_str(row, "occurred_on")),
         note=_str(row, "note"),
         settlement_id=_opt_int(row, "settlement_id"),
+    )
+
+
+def row_to_settlement(row: sqlite3.Row) -> Settlement:
+    """Convert database row to Settlement entity."""
+    return Settlement(
+        id=_int(row, "id"),
+        worker_id=_int(row, "worker_id"),
+        settled_on=from_db_date(_str(row, "settled_on")),
+        total_minutes=_int(row, "total_minutes"),
+        wage=_int(row, "wage"),
+        advances_total=_int(row, "advances_total"),
+        prepayments_total=_int(row, "prepayments_total"),
+        deductions_total=_int(row, "deductions_total"),
+        previous_balance=_int(row, "previous_balance"),
+        payable=_int(row, "payable"),
+        paid=_int(row, "paid"),
+        new_balance=_int(row, "new_balance"),
+        note=_str(row, "note"),
     )

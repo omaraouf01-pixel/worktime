@@ -14,6 +14,7 @@ def test_data_exports() -> None:
         "RecordNotFoundError",
         "SCHEMA_VERSION",
         "SessionRepository",
+        "SettlementRepository",
         "TransactionRepository",
         "WorkerRepository",
         "connect",
