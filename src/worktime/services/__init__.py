@@ -13,6 +13,7 @@ from worktime.services.errors import (
     WorkerArchivedError,
     WorkerHasOpenSessionError,
 )
+from worktime.services.transactions import TransactionService, TransactionTotals
 from worktime.services.workers import WorkerService, WorkerSummary
 
 __all__ = [
@@ -26,6 +27,8 @@ __all__ = [
     "RecordNotFoundError",
     "ServiceError",
     "SessionOverlapError",
+    "TransactionService",
+    "TransactionTotals",
     "WorkerArchivedError",
     "WorkerHasOpenSessionError",
     "WorkerService",

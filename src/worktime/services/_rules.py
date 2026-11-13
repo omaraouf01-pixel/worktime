@@ -1,6 +1,6 @@
 """Private shared validation rules for service operations."""
 
-from datetime import datetime
+from datetime import date, datetime
 
 from worktime.data import SessionRepository, WorkerRepository
 from worktime.domain import (
@@ -35,6 +35,14 @@ def ensure_not_in_future(end: datetime, now: datetime) -> None:
     """Raise ValidationError if session end datetime is strictly after current time."""
     if end > now:
         raise ValidationError("session ends in the future")
+
+
+def ensure_date_not_in_future(day: date, now: datetime) -> None:
+    """Raise ValidationError if date is strictly after current date."""
+    if isinstance(day, datetime) or not isinstance(day, date):
+        raise ValidationError("Field 'occurred_on' must be a date.")
+    if day > now.date():
+        raise ValidationError("date is in the future")
 
 
 def require_worker(

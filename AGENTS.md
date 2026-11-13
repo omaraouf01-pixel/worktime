@@ -52,3 +52,4 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
 - Current time comes solely from an injected `Clock`; no direct datetime calls.
 - UI imports errors only from `worktime.services` and `worktime.domain`.
 - Services coordinate repositories and domain logic; services never run SQL.
+- Money entered by the user reaches services only as integer centimes; conversion from dinars happens in the UI layer.

@@ -25,6 +25,8 @@ def test_services_exports() -> None:
         "RecordNotFoundError",
         "ServiceError",
         "SessionOverlapError",
+        "TransactionService",
+        "TransactionTotals",
         "WorkerArchivedError",
         "WorkerHasOpenSessionError",
         "WorkerService",
@@ -32,7 +34,7 @@ def test_services_exports() -> None:
         "system_clock",
     }
     assert set(worktime.services.__all__) == expected_all
-    assert len(worktime.services.__all__) == 15
+    assert len(worktime.services.__all__) == 17
     for name in expected_all:
         assert hasattr(worktime.services, name)
     assert "_rules" not in worktime.services.__all__
