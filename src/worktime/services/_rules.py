@@ -13,6 +13,7 @@ from worktime.services.errors import (
     RecordNotFoundError,
     SessionOverlapError,
     WorkerArchivedError,
+    WorkerHasOpenSessionError,
 )
 
 
@@ -58,3 +59,9 @@ def require_worker(
     if not allow_archived and worker.archived:
         raise WorkerArchivedError("Worker is archived.")
     return worker
+
+
+def ensure_no_open_session(sessions: SessionRepository, worker_id: int) -> None:
+    """Raise WorkerHasOpenSessionError if the worker currently has an active open session."""
+    if sessions.get_open(worker_id) is not None:
+        raise WorkerHasOpenSessionError("Worker has an active open session.")

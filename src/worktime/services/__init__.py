@@ -6,12 +6,19 @@ from worktime.services.errors import (
     DatabaseError,
     DuplicateWorkerError,
     NoOpenSessionError,
+    NothingToSettleError,
     OpenSessionExistsError,
     RecordNotFoundError,
     ServiceError,
     SessionOverlapError,
+    SettlementChangedError,
     WorkerArchivedError,
     WorkerHasOpenSessionError,
+)
+from worktime.services.settlements import (
+    SettlementDetails,
+    SettlementPreview,
+    SettlementService,
 )
 from worktime.services.transactions import TransactionService, TransactionTotals
 from worktime.services.workers import WorkerService, WorkerSummary
@@ -23,10 +30,15 @@ __all__ = [
     "DuplicateWorkerError",
     "ManualEntry",
     "NoOpenSessionError",
+    "NothingToSettleError",
     "OpenSessionExistsError",
     "RecordNotFoundError",
     "ServiceError",
     "SessionOverlapError",
+    "SettlementChangedError",
+    "SettlementDetails",
+    "SettlementPreview",
+    "SettlementService",
     "TransactionService",
     "TransactionTotals",
     "WorkerArchivedError",

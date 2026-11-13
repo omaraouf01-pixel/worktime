@@ -28,14 +28,24 @@ class WorkerHasOpenSessionError(ServiceError):
     """Raised when attempting to archive a worker who currently has an open session."""
 
 
+class NothingToSettleError(ServiceError):
+    """Raised when a worker has no unsettled records and no positive balance."""
+
+
+class SettlementChangedError(ServiceError):
+    """Raised when data changed between settlement preview and final settlement."""
+
+
 __all__ = [
     "DatabaseError",
     "DuplicateWorkerError",
     "NoOpenSessionError",
+    "NothingToSettleError",
     "OpenSessionExistsError",
     "RecordNotFoundError",
     "ServiceError",
     "SessionOverlapError",
+    "SettlementChangedError",
     "WorkerArchivedError",
     "WorkerHasOpenSessionError",
 ]

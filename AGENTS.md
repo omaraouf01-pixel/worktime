@@ -53,3 +53,5 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
 - UI imports errors only from `worktime.services` and `worktime.domain`.
 - Services coordinate repositories and domain logic; services never run SQL.
 - Money entered by the user reaches services only as integer centimes; conversion from dinars happens in the UI layer.
+- The hourly rate is a transient argument of the settlement service; it is never stored, logged or returned.
+- A settlement is computed and written inside a single write transaction from fresh data; previews are advisory only.

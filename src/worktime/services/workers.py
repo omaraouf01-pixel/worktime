@@ -13,10 +13,8 @@ from worktime.data import (
     write_transaction,
 )
 from worktime.domain import Worker
-from worktime.services.errors import (
-    RecordNotFoundError,
-    WorkerHasOpenSessionError,
-)
+from worktime.services._rules import ensure_no_open_session
+from worktime.services.errors import RecordNotFoundError
 
 if TYPE_CHECKING:
     import sqlite3
@@ -70,8 +68,7 @@ class WorkerService:
                 raise RecordNotFoundError("worker not found")
             if existing.archived:
                 return existing
-            if self._sessions.get_open(worker_id) is not None:
-                raise WorkerHasOpenSessionError("Worker has an active open session.")
+            ensure_no_open_session(self._sessions, worker_id)
             updated = replace(existing, archived=True)
             return self._workers.update(updated)
 
