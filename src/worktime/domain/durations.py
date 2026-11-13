@@ -21,24 +21,31 @@ def _session_interval(
     session: Session, *, now: datetime | None, allow_unbounded: bool
 ) -> tuple[datetime, datetime | None]:
     start = _floor_minute(session.start)
-    if session.is_open:
-        if now is None:
-            if not allow_unbounded:
-                raise ValidationError("now is required for an open session")
-            return start, None
-        now_dt = require_naive_datetime(now, "now")
-        now_floor = _floor_minute(now_dt)
-        if now_floor < start:
-            raise ValidationError("Field 'now' cannot be before session start.")
-        return start, now_floor
-    assert session.end is not None
-    return start, _floor_minute(session.end)
+    if session.end is not None:
+        return start, _floor_minute(session.end)
+    if now is None:
+        if not allow_unbounded:
+            raise ValidationError("now is required for an open session")
+        return start, None
+    now_dt = require_naive_datetime(now, "now")
+    now_floor = _floor_minute(now_dt)
+    if now_floor < start:
+        raise ValidationError("Field 'now' cannot be before session start.")
+    return start, now_floor
 
 
 def session_minutes(session: Session, *, now: datetime | None = None) -> int:
     """Return session duration in integer minutes, requiring now for open sessions."""
-    start, end = _session_interval(session, now=now, allow_unbounded=False)
-    assert end is not None
+    start = _floor_minute(session.start)
+    if session.end is not None:
+        end = _floor_minute(session.end)
+    else:
+        if now is None:
+            raise ValidationError("now is required for an open session")
+        now_dt = require_naive_datetime(now, "now")
+        end = _floor_minute(now_dt)
+        if end < start:
+            raise ValidationError("Field 'now' cannot be before session start.")
     return (end - start) // _ONE_MINUTE
 
 

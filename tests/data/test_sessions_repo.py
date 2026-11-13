@@ -62,6 +62,24 @@ def test_add_session_with_existing_id_raises_error(
         repo.add(sess)
 
 
+def test_add_session_with_settlement_id_raises_database_error(
+    conn: sqlite3.Connection,
+) -> None:
+    worker_id = insert_worker(conn)
+    settlement_id = insert_settlement(conn, worker_id=worker_id)
+    repo = SessionRepository(conn)
+    sess = Session(
+        worker_id=worker_id,
+        start=datetime(2026, 11, 6, 8, 0, 0),
+        end=datetime(2026, 11, 6, 12, 0, 0),
+        settlement_id=settlement_id,
+    )
+    with pytest.raises(DatabaseError, match="new records cannot carry a settlement"):
+        repo.add(sess)
+    count = conn.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
+    assert count == 0
+
+
 def test_second_open_session_rejected_for_same_worker(
     conn: sqlite3.Connection,
 ) -> None:
@@ -241,6 +259,15 @@ def test_list_for_worker_filtering_and_bounds(conn: sqlite3.Connection) -> None:
             worker_id,
             to_date=datetime(2026, 11, 6, 23, 59, 59),  # type: ignore[arg-type]
         )
+
+    # Only from_date: includes s_from_start, s_mid, s_to_end, s_after
+    only_from = repo.list_for_worker(worker_id, from_date=date(2026, 11, 6))
+    assert [s.id for s in only_from] == [s_to_end.id, repo.list_for_worker(worker_id)[-1].id]
+
+    # Only to_date: includes s_before, s_from_start, s_mid
+    only_to = repo.list_for_worker(worker_id, to_date=date(2026, 11, 5))
+    all_sess = repo.list_for_worker(worker_id)
+    assert [s.id for s in only_to] == [all_sess[0].id, s_from_start.id, s_mid.id]
 
 
 def test_update_session(conn: sqlite3.Connection) -> None:

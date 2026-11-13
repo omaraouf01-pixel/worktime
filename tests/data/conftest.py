@@ -79,14 +79,17 @@ def insert_session(
     settlement_id: int | None = None,
 ) -> int:
     cursor = conn.execute(
-        (
-            "INSERT INTO sessions (worker_id, start_at, end_at, note, settlement_id) "
-            "VALUES (?, ?, ?, ?, ?)"
-        ),
-        (worker_id, start_at, end_at, note, settlement_id),
+        ("INSERT INTO sessions (worker_id, start_at, end_at, note) VALUES (?, ?, ?, ?)"),
+        (worker_id, start_at, end_at, note),
     )
     assert cursor.lastrowid is not None
-    return cursor.lastrowid
+    sess_id = cursor.lastrowid
+    if settlement_id is not None:
+        conn.execute(
+            "UPDATE sessions SET settlement_id = ? WHERE id = ?",
+            (settlement_id, sess_id),
+        )
+    return sess_id
 
 
 def insert_money_transaction(
@@ -101,10 +104,16 @@ def insert_money_transaction(
     cursor = conn.execute(
         (
             "INSERT INTO money_transactions "
-            "(worker_id, kind, amount, occurred_on, note, settlement_id) "
-            "VALUES (?, ?, ?, ?, ?, ?)"
+            "(worker_id, kind, amount, occurred_on, note) "
+            "VALUES (?, ?, ?, ?, ?)"
         ),
-        (worker_id, kind, amount, occurred_on, note, settlement_id),
+        (worker_id, kind, amount, occurred_on, note),
     )
     assert cursor.lastrowid is not None
-    return cursor.lastrowid
+    tx_id = cursor.lastrowid
+    if settlement_id is not None:
+        conn.execute(
+            "UPDATE money_transactions SET settlement_id = ? WHERE id = ?",
+            (settlement_id, tx_id),
+        )
+    return tx_id

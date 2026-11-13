@@ -28,6 +28,7 @@ def connect(path: Path | str) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA busy_timeout = 5000")
     conn.execute("PRAGMA synchronous = FULL")
+    conn.execute("PRAGMA recursive_triggers = ON")
     return conn
 
 

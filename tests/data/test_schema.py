@@ -58,6 +58,12 @@ def test_schema_objects_exist(conn: sqlite3.Connection) -> None:
         "trg_settlements_immutable_update",
         "trg_settlements_immutable_delete",
         "trg_workers_no_delete",
+        "trg_sessions_no_preset_lock",
+        "trg_money_no_preset_lock",
+        "trg_workers_no_replace",
+        "trg_sessions_no_replace",
+        "trg_money_no_replace",
+        "trg_settlements_no_replace",
     }
     assert triggers == expected_triggers
 

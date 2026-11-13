@@ -30,20 +30,18 @@ class SessionRepository:
         """Insert a new session and return it with assigned id."""
         if session.id is not None:
             raise DatabaseError("Cannot add session that already has an id")
+        if session.settlement_id is not None:
+            raise DatabaseError("new records cannot carry a settlement")
         start_at_str = to_db_datetime(session.start)
         end_at_str = to_db_datetime(session.end) if session.end is not None else None
         try:
             cursor = self._conn.execute(
-                (
-                    "INSERT INTO sessions (worker_id, start_at, end_at, note, settlement_id) "
-                    "VALUES (?, ?, ?, ?, ?)"
-                ),
+                ("INSERT INTO sessions (worker_id, start_at, end_at, note) VALUES (?, ?, ?, ?)"),
                 (
                     session.worker_id,
                     start_at_str,
                     end_at_str,
                     session.note,
-                    session.settlement_id,
                 ),
             )
         except sqlite3.IntegrityError as exc:

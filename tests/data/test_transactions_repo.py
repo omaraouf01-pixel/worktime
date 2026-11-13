@@ -64,6 +64,25 @@ def test_add_transaction_with_existing_id_raises_error(
         repo.add(tx)
 
 
+def test_add_transaction_with_settlement_id_raises_database_error(
+    conn: sqlite3.Connection,
+) -> None:
+    worker_id = insert_worker(conn)
+    settlement_id = insert_settlement(conn, worker_id=worker_id)
+    repo = TransactionRepository(conn)
+    tx = Transaction(
+        worker_id=worker_id,
+        kind=TransactionKind.ADVANCE,
+        amount=1000,
+        occurred_on=date(2026, 11, 6),
+        settlement_id=settlement_id,
+    )
+    with pytest.raises(DatabaseError, match="new records cannot carry a settlement"):
+        repo.add(tx)
+    count = conn.execute("SELECT COUNT(*) FROM money_transactions").fetchone()[0]
+    assert count == 0
+
+
 def test_add_transaction_for_unknown_worker_raises_error(
     conn: sqlite3.Connection,
 ) -> None:
@@ -198,6 +217,15 @@ def test_list_for_worker_filtering_and_bounds(conn: sqlite3.Connection) -> None:
             worker_id,
             to_date=datetime(2026, 11, 6, 0, 0, 0),  # type: ignore[arg-type]
         )
+
+    # Only from_date
+    only_from = repo.list_for_worker(worker_id, from_date=date(2026, 11, 6))
+    assert [t.id for t in only_from] == [t_to.id, repo.list_for_worker(worker_id)[-1].id]
+
+    # Only to_date
+    only_to = repo.list_for_worker(worker_id, to_date=date(2026, 11, 5))
+    all_tx = repo.list_for_worker(worker_id)
+    assert [t.id for t in only_to] == [all_tx[0].id, t_from.id, t_mid.id]
 
 
 def test_update_transaction(conn: sqlite3.Connection) -> None:

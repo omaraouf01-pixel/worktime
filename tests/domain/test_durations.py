@@ -183,6 +183,7 @@ def test_resolve_end_valid_cases(
         (datetime(2026, 1, 1, 9, 0, 15), time(9, 0, 45)),
         (datetime(2026, 1, 1, 9, 0, 45), time(9, 0, 15)),
         (datetime(2026, 1, 1, 23, 59, 10), time(23, 59, 50)),
+        (datetime(2026, 1, 1, 9, 30, 45, 123456), time(9, 30)),
     ],
 )
 def test_resolve_end_equal_at_minute_precision_raises(start: datetime, end_clock: time) -> None:
@@ -287,6 +288,13 @@ def test_sessions_overlap_open_unbounded_overlaps_later_closed() -> None:
     later_closed = _make_session(datetime(2026, 1, 1, 12, 0), datetime(2026, 1, 1, 14, 0))
     assert sessions_overlap(open_session, later_closed) is True
     assert sessions_overlap(later_closed, open_session) is True
+
+
+def test_sessions_overlap_both_open_without_now() -> None:
+    s1 = _make_session(datetime(2026, 1, 1, 9, 0))
+    s2 = _make_session(datetime(2026, 1, 1, 14, 0))
+    assert sessions_overlap(s1, s2) is True
+    assert sessions_overlap(s2, s1) is True
 
 
 def test_sessions_overlap_open_unbounded_does_not_overlap_earlier_closed() -> None:

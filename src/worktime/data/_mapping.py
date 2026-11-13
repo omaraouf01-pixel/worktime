@@ -71,15 +71,15 @@ def require_lastrowid(cursor: sqlite3.Cursor) -> int:
 def translate_integrity_error(exc: sqlite3.IntegrityError, *, context: str) -> Exception:
     """Translate SQLite integrity errors into domain or data layer exceptions."""
     msg = str(exc)
-    if "cannot lock an open session" in msg:
+    if msg == "cannot lock an open session":
         return ValidationError(msg)
-    if "settlement belongs to another worker" in msg:
+    if msg == "settlement belongs to another worker":
         return ValidationError(msg)
-    if "record locked" in msg:
+    if msg == "record locked":
         return RecordLockedError(msg)
-    if "FOREIGN KEY" in msg:
+    if msg.startswith("FOREIGN KEY constraint failed"):
         return RecordNotFoundError("worker not found")
-    if "UNIQUE" in msg:
+    if msg.startswith("UNIQUE constraint failed"):
         if context == "worker":
             return DuplicateWorkerError(msg)
         if context == "session":

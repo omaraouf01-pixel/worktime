@@ -1,6 +1,6 @@
 """Database schema definitions and version migrations."""
 
-SCHEMA_VERSION: int = 1
+SCHEMA_VERSION: int = 2
 
 MIGRATIONS: tuple[tuple[str, ...], ...] = (
     (
@@ -132,5 +132,38 @@ BEFORE DELETE ON workers
 BEGIN
   SELECT RAISE(ABORT, 'workers are archived, not deleted');
 END""",
+    ),
+    (
+        (
+            "CREATE TRIGGER trg_sessions_no_preset_lock BEFORE INSERT ON sessions "
+            "WHEN NEW.settlement_id IS NOT NULL "
+            "BEGIN SELECT RAISE(ABORT, 'new records cannot be pre-locked'); END"
+        ),
+        (
+            "CREATE TRIGGER trg_money_no_preset_lock BEFORE INSERT ON money_transactions "
+            "WHEN NEW.settlement_id IS NOT NULL "
+            "BEGIN SELECT RAISE(ABORT, 'new records cannot be pre-locked'); END"
+        ),
+        (
+            "CREATE TRIGGER trg_workers_no_replace BEFORE INSERT ON workers "
+            "WHEN NEW.id IS NOT NULL AND EXISTS (SELECT 1 FROM workers WHERE id = NEW.id) "
+            "BEGIN SELECT RAISE(ABORT, 'record already exists'); END"
+        ),
+        (
+            "CREATE TRIGGER trg_sessions_no_replace BEFORE INSERT ON sessions "
+            "WHEN NEW.id IS NOT NULL AND EXISTS (SELECT 1 FROM sessions WHERE id = NEW.id) "
+            "BEGIN SELECT RAISE(ABORT, 'record already exists'); END"
+        ),
+        (
+            "CREATE TRIGGER trg_money_no_replace BEFORE INSERT ON money_transactions "
+            "WHEN NEW.id IS NOT NULL AND EXISTS "
+            "(SELECT 1 FROM money_transactions WHERE id = NEW.id) "
+            "BEGIN SELECT RAISE(ABORT, 'record already exists'); END"
+        ),
+        (
+            "CREATE TRIGGER trg_settlements_no_replace BEFORE INSERT ON settlements "
+            "WHEN NEW.id IS NOT NULL AND EXISTS (SELECT 1 FROM settlements WHERE id = NEW.id) "
+            "BEGIN SELECT RAISE(ABORT, 'settlement is immutable'); END"
+        ),
     ),
 )

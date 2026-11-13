@@ -42,3 +42,7 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
 - Database file never lives inside the project folder.
 - Repositories never manage transactions; services own them via write_transaction.
 - Repositories translate sqlite3 errors into data-layer or domain errors; nothing outside data/ catches sqlite3 exceptions.
+- New rows are never inserted pre-locked; locking happens only through `SettlementRepository.attach_records`.
+- `PRAGMA recursive_triggers = ON` must stay enabled in `connect()`.
+- No `assert` statements in `src/`.
+- Every public class, function and method has a one-line docstring (enforced by tests/test_code_hygiene.py).

@@ -27,13 +27,15 @@ class TransactionRepository:
         """Insert a new transaction and return it with assigned id."""
         if transaction.id is not None:
             raise DatabaseError("Cannot add transaction that already has an id")
+        if transaction.settlement_id is not None:
+            raise DatabaseError("new records cannot carry a settlement")
         occurred_on_str = to_db_date(transaction.occurred_on)
         try:
             cursor = self._conn.execute(
                 (
                     "INSERT INTO money_transactions "
-                    "(worker_id, kind, amount, occurred_on, note, settlement_id) "
-                    "VALUES (?, ?, ?, ?, ?, ?)"
+                    "(worker_id, kind, amount, occurred_on, note) "
+                    "VALUES (?, ?, ?, ?, ?)"
                 ),
                 (
                     transaction.worker_id,
@@ -41,7 +43,6 @@ class TransactionRepository:
                     transaction.amount,
                     occurred_on_str,
                     transaction.note,
-                    transaction.settlement_id,
                 ),
             )
         except sqlite3.IntegrityError as exc:

@@ -4,6 +4,8 @@ from worktime.ui import strings
 
 
 class MainWindow(QMainWindow):
+    """Main application window for WorkTime."""
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setWindowTitle(strings.APP_TITLE)
