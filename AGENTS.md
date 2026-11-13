@@ -46,3 +46,9 @@ WorkTime is a Windows-first desktop application (Python, PySide6, SQLite) for tr
 - `PRAGMA recursive_triggers = ON` must stay enabled in `connect()`.
 - No `assert` statements in `src/`.
 - Every public class, function and method has a one-line docstring (enforced by tests/test_code_hygiene.py).
+
+## Services Layer
+- Services own transactions via `write_transaction`; UI never opens transactions.
+- Current time comes solely from an injected `Clock`; no direct datetime calls.
+- UI imports errors only from `worktime.services` and `worktime.domain`.
+- Services coordinate repositories and domain logic; services never run SQL.
